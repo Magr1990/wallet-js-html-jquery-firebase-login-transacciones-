@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depositar - Wallet Chile</title>
+    <meta name="author" content="Miguel Gonzalez Roblero">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+
+    <div class="chile-header">
+        <h4 class="m-0">Realizar Depósito</h4>
+    </div>
+
+    <div class="container mt-4">
+        <div class="balance-card text-center">
+            <h5>Saldo Cuenta Corriente</h5>
+            <div class="balance-amount">
+                <span class="clp-symbol">$</span><span id="current-balance">0</span>
+            </div>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <div class="card p-4 shadow-sm">
+            <form id="depositForm">
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Monto a depositar</label>
+                    <input type="number" class="form-control" id="amount" placeholder="Ej: 50000" min="1" required>
+                </div>
+                <div class="mb-3">
+                    <label for="deposit-type" class="form-label">Tipo de Depósito</label>
+                    <select class="form-select" id="deposit-type" required>
+                        <option value="" selected disabled>Seleccione origen</option>
+                        <option value="Cajero Automático">Cajero Automático</option>
+                        <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                        <option value="Sucursal">Sucursal</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-chile w-100">Confirmar Depósito</button>
+            </form>
+
+            <div id="verification-section" style="display:none;">
+                <div class="text-center mb-3">
+                    <h5>Verificación de Seguridad</h5>
+                    <p class="text-muted">Hemos enviado un código SMS a tu celular.</p>
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control text-center fs-4" id="sms-code" placeholder="------" maxlength="6">
+                </div>
+                <button id="btn-verify" class="btn btn-success w-100">Verificar Código</button>
+                <button id="btn-cancel-verify" class="btn btn-link text-secondary w-100 mt-2">Cancelar</button>
+            </div>
+            
+            <div id="deposit-legend" class="mt-3 text-center text-success fw-bold" style="display:none;"></div>
+        </div>
+        
+        <div class="mt-3">
+            <a href="menu.html" class="btn btn-link text-secondary">Volver al menú</a>
+        </div>
+        <div class="text-end mt-3 mb-4 text-muted">
+            <small>Desarrollado por Miguel Gonzalez Roblero</small>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let currentBalance = parseInt(localStorage.getItem('walletBalance')) || 0;
+            $('#current-balance').text(currentBalance.toLocaleString('es-CL'));
+            
+            let generatedCode = null;
+            let pendingAmount = 0;
+            let pendingType = '';
+
+            $('#depositForm').submit(function(e) {
+                e.preventDefault();
+                
+                pendingAmount = parseInt($('#amount').val());
+                pendingType = $('#deposit-type').val();
+
+                if (pendingAmount > 0 && pendingType) {
+                    generatedCode = Math.floor(100000 + Math.random() * 900000);
+                    
+                    alert(`SIMULACIÓN SMS: Tu código de verificación es ${generatedCode}`);
+
+                    $('#depositForm').slideUp();
+                    $('#verification-section').slideDown();
+                    $('#sms-code').val('').focus();
+                }
+            });
+
+            $('#btn-verify').click(function() {
+                const inputCode = $('#sms-code').val();
+
+                if (inputCode == generatedCode) {
+                    const verifyBtn = $(this);
+                    verifyBtn.prop('disabled', true).text('Validando...');
+
+                    setTimeout(function() {
+                        currentBalance += pendingAmount;
+                        localStorage.setItem('walletBalance', currentBalance);
+                        $('#current-balance').text(currentBalance.toLocaleString('es-CL'));
+
+                        const newTransaction = {
+                            id: Date.now(),
+                            type: 'deposit',
+                            amount: pendingAmount,
+                            date: new Date().toISOString().split('T')[0],
+                            desc: `Depósito (${pendingType})`
+                        };
+                        
+                        let transactions = JSON.parse(localStorage.getItem('walletTransactions')) || [];
+                        transactions.unshift(newTransaction);
+                        localStorage.setItem('walletTransactions', JSON.stringify(transactions));
+
+                        $('#verification-section').hide();
+
+                        $('#deposit-legend').text(`Has depositado: $${pendingAmount.toLocaleString('es-CL')}`).fadeIn();
+                        $('#alert-container').html(`
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <strong>¡Depósito Exitoso!</strong> El dinero ha sido acreditado.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        `);
+
+                        $('#amount').val('');
+                        $('#deposit-type').val('');
+                        setTimeout(() => window.location.href = 'menu.html', 2000);
+                    }, 1000);
+                } else {
+                    alert("Código incorrecto. Por favor verifique el SMS.");
+                }
+            });
+
+            $('#btn-cancel-verify').click(function() {
+                $('#verification-section').slideUp();
+                $('#depositForm').slideDown();
+            });
+        });
+    </script>
+</body>
+</html>
