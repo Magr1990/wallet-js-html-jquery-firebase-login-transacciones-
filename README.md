@@ -1,71 +1,64 @@
-# 💼 Wallet Chile - Billetera Digital
+# Wallet Chile 💰
 
-Una aplicación web de billetera digital moderna y responsiva, desarrollada para simular operaciones bancarias básicas como depósitos, transferencias y revisión de historial de movimientos.
-
-## 📝 Descripción
-
-Este proyecto es una simulación de una billetera virtual ("Wallet Chile") que permite a los usuarios gestionar su saldo y realizar transacciones. El sistema utiliza **LocalStorage** para persistir los datos (saldo y transacciones) entre las diferentes pantallas, ofreciendo una experiencia de usuario fluida y realista sin necesidad de un backend.
+Bienvenido a **Wallet Chile**, una aplicación web de billetera digital simulada que permite gestionar saldo, realizar transferencias, depósitos y pagos de servicios. Este proyecto utiliza tecnologías web estándar y se integra con **Firebase** para la autenticación de usuarios y el almacenamiento de transacciones en tiempo real.
 
 ## 🚀 Características Principales
 
-*   **Inicio de Sesión:** Validación de campos y redirección segura.
-*   **Persistencia de Datos:** El saldo y el historial de transacciones se guardan en el navegador del usuario.
-*   **Depósitos:**
-    *   Simulación de diferentes orígenes (Cajero, Transferencia, Sucursal).
-    *   **Verificación de Seguridad:** Simulación de código SMS para confirmar transacciones.
-*   **Transferencias:**
-    *   Gestión de agenda de contactos (Agregar/Buscar).
-    *   Validación de saldo insuficiente.
-    *   Selección de bancos chilenos reales.
-*   **Historial de Movimientos:**
-    *   Visualización de transacciones recientes.
-    *   Filtros dinámicos por tipo de movimiento (Depósitos, Compras, Transferencias).
-*   **Diseño Responsivo:** Interfaz adaptable a dispositivos móviles y escritorio utilizando **Bootstrap 5**.
+*   **Autenticación Segura**: Registro e inicio de sesión de usuarios utilizando **Firebase Authentication** (Correo/Contraseña).
+*   **Saldo en Tiempo Real**: Visualización del saldo de la cuenta corriente actualizado al instante.
+*   **Transferencias**: Envío de dinero a contactos simulados, guardando el historial en la nube (Firestore).
+*   **Depósitos**: Simulación de carga de saldo con verificación de seguridad (código SMS simulado).
+*   **Historial de Movimientos**: Listado de transacciones (depósitos, compras, transferencias) filtrable y ordenado por fecha, leyendo directamente desde la base de datos.
+*   **Productos Financieros**:
+    *   **Línea de Crédito**: Visualización de cupo utilizado/disponible y funcionalidad de pago de deuda.
+    *   **Tarjeta de Crédito**: Visualización de cupo nacional (CLP) e internacional (USD), con simulación de seguridad (CVV oculto tras clave) y pagos.
+*   **Pago de Servicios**: Interfaz para pago de cuentas básicas (Luz, Agua, etc.) y recargas.
 
 ## 🛠️ Tecnologías Utilizadas
 
-*   **HTML5:** Estructura semántica de las pantallas.
-*   **CSS3:** Estilos personalizados y variables CSS para la identidad de marca.
-*   **Bootstrap 5.3:** Framework para el diseño responsivo, componentes (alertas, tarjetas, modales) y utilidades.
-*   **JavaScript (ES6):** Lógica de negocio y manipulación del DOM.
-*   **jQuery 3.6.0:** Simplificación de selectores, manejo de eventos y animaciones.
+*   **Frontend**: HTML5, CSS3.
+*   **Frameworks y Librerías**:
+    *   [jQuery](https://jquery.com/) (Manipulación del DOM y lógica de eventos).
+    *   [Bootstrap 5](https://getbootstrap.com/) (Diseño responsivo, modales y componentes UI).
+*   **Backend as a Service (BaaS)**:
+    *   **Firebase Authentication**: Gestión de identidad y sesiones.
+    *   **Firebase Firestore**: Base de datos NoSQL para persistencia de transacciones y usuarios.
 
-## 📂 Estructura del Proyecto
+## 📋 Instalación y Configuración
 
-```text
-wallet-chile/
-│
-├── login.html          # Pantalla de inicio de sesión
-├── menu.html           # Menú principal (Dashboard)
-├── deposit.html        # Pantalla de depósitos
-├── sendmoney.html      # Pantalla de transferencias y contactos
-├── transactions.html   # Historial de movimientos
-├── css.css             # Estilos personalizados
-└── README.md           # Documentación del proyecto
-```
+Para ejecutar este proyecto localmente, sigue estos pasos:
 
-## 🔧 Instalación y Uso
-
-1.  **Clonar el repositorio:**
+1.  **Clonar el repositorio** (o descargar los archivos):
     ```bash
     git clone https://github.com/tu-usuario/wallet-chile.git
     ```
-2.  **Ejecutar:**
-    *   Navega a la carpeta del proyecto.
-    *   Abre el archivo `login.html` en tu navegador web favorito (Chrome, Firefox, Edge).
 
-3.  **Credenciales de prueba:**
-    *   Puedes ingresar cualquier correo y contraseña para acceder (validación simulada).
+2.  **Configurar Firebase**:
+    *   Crea un nuevo proyecto en [Firebase Console](https://console.firebase.google.com/).
+    *   Habilita **Authentication** y activa el proveedor de "Correo electrónico/Contraseña".
+    *   Crea una base de datos en **Firestore Database**.
+    *   Obtén tus credenciales de configuración web (`apiKey`, `projectId`, etc.) desde la configuración del proyecto.
 
-## 💡 Detalles de Implementación
+3.  **Actualizar Credenciales en el Código**:
+    *   Abre los archivos `.html` principales (`login.html`, `menu.html`, `sendmoney.html`, etc.).
+    *   Busca la constante `firebaseConfig` y reemplázala con tus propias credenciales:
 
-*   **Manejo del DOM:** Se utiliza jQuery (`$`) para capturar eventos de formularios y botones, haciendo el código más conciso.
-*   **Almacenamiento:** Se utiliza `localStorage.setItem` y `getItem` para mantener el estado de la billetera (saldo `walletBalance` y lista `walletTransactions`) a través de las recargas de página.
-*   **Seguridad Simulada:** Implementación de lógica para generar códigos aleatorios y validarlos en el frontend para simular autenticación de dos factores (2FA).
+    ```javascript
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_PROYECTO.firebaseapp.com",
+        projectId: "TU_PROYECTO",
+        // ... resto de tus credenciales
+    };
+    ```
+
+4.  **Ejecutar**:
+    *   Abre el archivo `login.html` en tu navegador web.
+    *   ¡Regístrate con un correo nuevo y comienza a usar la Wallet!
 
 ## 👤 Autor
 
-**Miguel Gonzalez Roblero**
+Desarrollado por **Miguel Gonzalez Roblero**.
 
 ---
-*Desarrollado como parte de un desafío de desarrollo web frontend.*
+*Este proyecto es una aplicación de demostración con fines educativos.*
